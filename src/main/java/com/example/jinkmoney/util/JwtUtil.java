@@ -3,9 +3,10 @@ package com.example.jinkmoney.util;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
-
+@Component
 public class JwtUtil {
 
     // 秘钥（随意写一串字符串，但不要泄漏）
