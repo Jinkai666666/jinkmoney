@@ -30,8 +30,8 @@ public class UserService {
         return null;
     }
 
-    // 查询用户（给 /info 用）
-    public User findByUsername(String username) {
-        return userRepository.findByUsername(username);
+    // 根据 userId 查用户（给 /info 用）
+    public User findById(Long userId) {
+        return userRepository.findById(userId).orElse(null);
     }
 }

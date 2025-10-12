@@ -6,47 +6,54 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+
 @Component
 public class JwtUtil {
 
-    // 秘钥（随意写一串字符串，但不要泄漏）
+    // 秘钥（自己定义，别外泄）
     private static final String SECRET_KEY = "jinkmoney-secret-key";
 
-    // Token 有效期（单位：毫秒）→ 1 天
+    // Token 有效期：1 天
     private static final long EXPIRATION_TIME = 1000 * 60 * 60 * 24;
 
-    // 生成 Token
-    public static String generateToken(String username) {
+    /**
+     * 生成 Token
+     *  userId 存入 JWT 的 "sub"字段
+     */
+    public static String generateToken(Long userId) {
         return Jwts.builder()
-                .setSubject(username) // 存入用户名
-                .setIssuedAt(new Date()) // 签发时间
+                .setSubject(String.valueOf(userId)) // 存入 userId
+                .setIssuedAt(new Date())             // 签发时间
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME)) // 过期时间
-                .signWith(SignatureAlgorithm.HS256, SECRET_KEY) // 签名算法 + 密钥
-                .compact(); // 压缩成字符串
+                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
+                .compact();
     }
 
-    // 解析 Token：获取用户名
-    public static String getUsernameFromToken(String token) {
+    /**
+     * 从 Token 中解析出 userId
+     */
+    public static Long extractUserId(String token) {
         try {
             Claims claims = Jwts.parser()
                     .setSigningKey(SECRET_KEY)
                     .parseClaimsJws(token)
                     .getBody();
-            return claims.getSubject();
+            return Long.parseLong(claims.getSubject()); // 从 sub 拿 userId
         } catch (Exception e) {
-            return null; // 解析失败（过期或无效）
+            return null;
         }
     }
 
-    // 校验 Token 是否有效
+    /**
+     * 校验 Token 是否有效
+     */
     public static boolean validateToken(String token) {
         try {
             Claims claims = Jwts.parser()
                     .setSigningKey(SECRET_KEY)
                     .parseClaimsJws(token)
                     .getBody();
-            Date expiration = claims.getExpiration();
-            return expiration.after(new Date());
+            return claims.getExpiration().after(new Date());
         } catch (Exception e) {
             return false;
         }
