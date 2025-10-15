@@ -1,5 +1,5 @@
 # =========================
-# Backend (Spring Boot)
+# 后端 Spring Boot
 # =========================
 backend/target/
 backend/build/
@@ -12,18 +12,18 @@ backend/.idea/
 *.ear
 
 # =========================
-# Frontend (Vue3 + Vite)
+# 前端 Vue3 + Vite
 # =========================
-frontend/node_modules/
-frontend/dist/
-frontend/.idea/
-frontend/.vscode/
-frontend/.env
-frontend/.env.*
-!frontend/.env.example
+jinkmoney-frontend/node_modules/
+jinkmoney-frontend/dist/
+jinkmoney-frontend/.idea/
+jinkmoney-frontend/.vscode/
+jinkmoney-frontend/.env
+jinkmoney-frontend/.env.*
+!jinkmoney-frontend/.env.example
 
 # =========================
-# IDE / Editor files
+# 通用 IDE 配置
 # =========================
 .idea/
 .vscode/
@@ -32,7 +32,7 @@ frontend/.env.*
 *.iws
 
 # =========================
-# System & Logs
+# 系统与日志文件
 # =========================
 .DS_Store
 Thumbs.db
