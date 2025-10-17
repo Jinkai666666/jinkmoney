@@ -33,10 +33,14 @@ async function login() {
   try {
     const res = await axios.post('http://localhost:8080/api/user/login', form)
     // 取出后端返回的 token
-    localStorage.setItem('token', res.data.token)
+    const token = res.data.data   // 后端返回的字段是 data，不是 token
+    localStorage.setItem('token', token)
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+
     alert('登录成功')
-    // 跳转到主页
+    setTimeout(() => {
     window.location.href = '/home'
+    }, 500)
   } catch (e) {
     alert('登录失败，请检查账号或密码')
   }

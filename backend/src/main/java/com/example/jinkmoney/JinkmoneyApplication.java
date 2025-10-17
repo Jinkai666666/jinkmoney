@@ -3,10 +3,11 @@ package com.example.jinkmoney;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication // Spring Boot 主启动类
+@SpringBootApplication
 public class JinkmoneyApplication {
-
     public static void main(String[] args) {
+        System.out.println("=== 当前工作目录 === " + System.getProperty("user.dir"));
         SpringApplication.run(JinkmoneyApplication.class, args);
     }
 }
+
