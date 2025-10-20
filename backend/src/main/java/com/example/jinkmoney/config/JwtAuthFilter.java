@@ -7,12 +7,18 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
+import java.util.List;
 
+/**
+ * JWT 拦截器：所有请求先过这里
+ * 负责从请求头里提取 token，校验、解析，然后把用户信息塞进 Spring Security
+ */
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
 
@@ -25,30 +31,24 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
-        // 从请求头获取 Authorization 字段
-        String authHeader = request.getHeader("Authorization");
+        try {
+            String authHeader = request.getHeader("Authorization");
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                String token = authHeader.substring(7);
+                Long userId = jwtUtil.extractUserId(token);
 
-        // 判断是否以 "Bearer " 开头（JWT 标准前缀）
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String token = authHeader.substring(7); // 去掉前缀
-
-            // 解析 token 里的 userId
-            Long userId = jwtUtil.extractUserId(token);
-
-            // 如果 SecurityContext 还没设置，就进行认证
-            if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                if (jwtUtil.validateToken(token)) {
-                   //转为String
-                    UsernamePasswordAuthenticationToken authToken =
-                            new UsernamePasswordAuthenticationToken(String.valueOf(userId), null, null);
-
+                // token 合法就塞进上下文
+                if (userId != null && jwtUtil.validateToken(token)) {
+                    var authorities = List.of(new SimpleGrantedAuthority("ROLE_USER"));
+                    var authToken = new UsernamePasswordAuthenticationToken(userId, null, authorities);
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             }
+        } catch (Exception e) {
+            System.out.println("JWT 出错：" + e.getMessage());
         }
 
-        // 放行请求
         filterChain.doFilter(request, response);
     }
 }

@@ -5,7 +5,7 @@ import lombok.Data;
 
 // 实体类，对应数据库表
 @Entity
-@Table(name = "user") // 表名
+@Table(name = "users") // 表名
 @Data // Lombok 自动生成 getter/setter/toString/hashCode
 public class User {
 
